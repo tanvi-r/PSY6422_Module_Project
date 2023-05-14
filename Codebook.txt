@@ -1,0 +1,51 @@
+PSY6422 Module Project titled "World Happiness: Resilience in the face of the COVID-19 Pandemic"
+
+The files in this project are:
+
+PSY6422 Module Project >
+1. > data
+	i. whr2018_data - Data for 2017 from the 2018 report
+     ii. whr2019_data - Data for 2018 from the 2019 report
+    iii. whr2020_data - Data for 2019 from the 2020 report
+     iv. whr2021_data - Data for 2020 from the 2021 report
+      v. whr2022_data - Data for 2021 from the 2022 report
+     vi. whr2023_data - Data for 2022 from the 2023 report
+
+2. > figures
+	i. country_wise_change.png - Diverging bar plot displaying direction and magnitude of difference of means between happiness scores for 2017-2019 and 2020-2022 for every country
+     ii. happiness_map.html - Plotly map displaying world happiness scores from 2017 to 2022
+    iii. region_wise_change.png - Boxplot displaying the mean difference between happiness scores for 2017-2019 and 2020-2022 of countries as per each world region.
+
+3. PSY6422_Module_Project.Rproj
+The R project file for this complete project
+
+4. index.Rmd
+The RMarkdown created for this project for knitting to html
+
+5. index.html
+The html file generated for this project and which created the webpage for it
+
+6. markdown220225465.Rmd
+The RMarkdown created for this project to be knitted to pdf with the required changes (e.g., interactive visualisation code deactivated) 
+
+-----------------------------------------------------------------------
+
+The variables used/ calculated during wrangling and their explanations:
+
+Country - Country names; the project used data of 130 Countires, others were excluded due to data unavailability
+
+Regional indicator - World region that the country is part of, as per the World Happiness Report's categorization (10 Regions)
+
+Year - Year in which the data was collected (6 years - 2017,2018,2019,2020,2021,2022)
+
+Happiness score/ Ladder score - Life evaluation score based on the Gallup World Poll data gathered from each country; the scores provided by the WHR for each year are an average of that and the previous two years for e.g., the score for 2022 is an average of the scores for 2020, 2021 and 2022 for that country. 
+
+avg_2017_2019 - Average Happiness Score calculated for 2017 to 2019
+
+avg_2020_2022 - Average Happiness Score calculated for 2020 to 2022
+
+mean_diff - Difference of means calculated for means of 2017-2019 and 2020-2022; calculated by subtracting the mean for 2017-2019 from the mean for 2020-2022 such that a positive value indicates increase and a negative value indicates decrease 
+
+diff_pos - Variable values: TRUE / FALSE; if mean_diff > 0 = TRUE, if mean_diff < 0 = FALSE; used for color coding in the diverging barplot to indicate mean increase/ decrease
+
+

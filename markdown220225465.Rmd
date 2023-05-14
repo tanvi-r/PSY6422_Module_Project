@@ -115,6 +115,7 @@ data_2018 <- data_2018_raw %>%
   rename('2018'='Happiness score') #rename column for ease of merging data frames
 ```
 
+
 **2019 Data**
 
 ```{r, warning=FALSE, message=FALSE}
@@ -383,7 +384,7 @@ change
 
 ### Analysing Visualisation 2
 
-Almost equal number of countries saw an increase and decrease in happiness scores across the world. Overall, barring a few exceptions (e.g., Lebanon – 1.745), the mean difference between the two sets of years was quite small for most countries. 
+Almost equal number of countries saw an increase and decrease in happiness scores across the world. Overall, barring a few exceptions (e.g., Lebanon = –1.745), the mean difference between the two sets of years was quite small for most countries. 
 
 
 ## Visualisation 3: Region-wise Changes in World Happiness Scores from 2017-2019 to 2020-2022

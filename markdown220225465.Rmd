@@ -1,0 +1,448 @@
+---
+title: "World Happiness: Resilience in the face of the COVID-19 Pandemic"
+subtitle: Project for PSY6422 Data Analysis and Visualisation
+output:
+  pdf_document:
+    highlight: 'tango' 
+    df_print: 'paged'
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    keep_tex: true
+
+colorlinks: true
+boxlinks: true
+urlcolor: blue
+linkcolor: violet
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background and Research Questions
+
+The COVID-19 pandemic has had an impact on every aspect of human life, be it physical, psychological or social. Given its far-reaching impact on psychological health, I was curious to explore the effect that the pandemic had on the well-being of people at a global level.
+
+Since 2012, the World Happiness Report has been released year after year providing a review of the state of happiness in the world. These reports are based on the Gallup World Poll data which assesses subjective well-being by asking a simple question worded in English as “Please imagine a ladder, with steps numbered from 0 at the bottom to 10 at the top. The top of the ladder represents the best possible life for you and the bottom of the ladder represents the worst possible life for you. On which step of the ladder would you say you personally feel you stand at this time?” This measure is also referred to as Cantril life ladder. The poll data for each country is the national average response to this question of life evaluations, year on year. The scores provided by the WHR for each year are an average of that and the previous two years for e.g., the score for 2022 is an average of the scores for 2020, 2021 and 2022 for that country.
+
+In order to analyse the pandemic’s impact on world happiness or well-being, I compared the world happiness scores for each country from three years before the pandemic i.e., 2017 to 2019 to the three years during the pandemic i.e., 2020 to 2022. I aimed to address the following questions:
+
+* How have the World Happiness scores for every country fared from 2017 to 2022?
+
+* What were the changes in the World Happiness scores for every country and every world region from 2017-2019 to 2020-2022?
+
+## Data Source
+
+The data was taken from the [World Happiness Reports from 2018 to 2023](https://worldhappiness.report/archive/). Each year’s report, published on 20th March, reports the poll data gathered in the previous year thus providing the data for 2017 to 2022. Throughout the rest of this project, the years mentioned refer to the year in which the data was gathered and not when the report was published.
+
+The links for accessing individual datasets are provided under the [`References section`](#references).
+
+## Data Preparation
+Every dataset obtained from the World Happiness Report website had multiple columns representing many variables. For this project, I imported the complete dataset for each year and then selected the variables needed for my analysis - the country names, the regional indicators and the ladder or happiness scores. 
+
+### Installing & Loading Libraries
+
+Library and Version |Purpose
+:-----------------  |:-----------------
+tidyverse_1.3.2     |for handling data
+readr_2.1.4         |for reading data files e.g., csv files
+readxl_1.4.1        |for reading data files e.g., excel files
+here_1.0.1          |for easy file and directory referencing  
+ggplot2_3.4.2       |for data visualisations
+plotly_4.10.1       |for interactive data visualisations
+reshape2_1.4.4      |for transforming data between wide and long formats  
+forcats_1.0.0       |for managing character vectors
+
+```{r, warning=FALSE, message=FALSE}
+if(!require(tidyverse)){install.packages("tidyverse"); library(tidyverse)}
+if(!require(readr)){install.packages("readr"); library(readr)}
+if(!require(readxl)){install.packages("readxl"); library(readxl)}
+if(!require(here)){install.packages("here"); library(here)}
+if(!require(ggplot2)){install.packages("ggplot2"); library(ggplot2)}
+if(!require(reshape2)){install.packages("reshape2"); library(reshape2)}
+if(!require(plotly)){install.packages("plotly"); library(plotly)}
+if(!require(forcats)){install.packages("forcats"); library(forcats)}
+```
+
+### Importing & Preparing Datasets
+The variables (taken from the datasets or calculated by wrangling the data) used in this analysis are:
+
+Variable name | Explanation
+:----- | :-----
+Country | Country name (countries)
+Regional indicator | World region that the country is part of, as per the World Happiness Report's categorization (10 Regions)
+Year | Year in which data was collected (6 years)
+Happiness score/ Ladder score | Life evaluation score based on the Gallup World Poll data
+avg_2017_2019 | Average Happiness Score for 2017 to 2019
+avg_2020_2022 | Average Happiness Score for 2020 to 2022
+mean_diff | Difference of means for 2017-2019 and 2020-2022
+diff_pos | mean_diff > 0 = TRUE, mean_diff < 0 = FALSE
+
+**2017 Data**
+
+```{r, warning=FALSE, message=FALSE}
+#import data file for 2017
+data_2017_raw <- read_excel(here("data", "whr2018_data.xls"), 
+                            sheet = 2, range = "A1:K157") 
+
+#clean data file for 2017
+data_2017 <- data_2017_raw %>% 
+  select("Country", "Happiness score") %>% #select the required columns
+  rename('2017'='Happiness score') #rename columns for ease of merging data frames
+
+#rename countries in the 2017 data frame to match later years for ease of merging
+data_2017$Country <- gsub("Northern Cyprus",
+                          "North Cyprus",as.character(data_2017$Country))
+data_2017$Country <- gsub("Hong Kong SAR, China", 
+                          "Hong Kong S.A.R. of China",
+                          as.character(data_2017$Country))
+data_2017$Country <- gsub("Trinidad & Tobago", 
+                          "Trinidad and Tobago",
+                          as.character(data_2017$Country))
+```
+
+**2018 Data**
+
+```{r, warning=FALSE, message=FALSE}
+#import data file for 2018
+data_2018_raw <- read_excel(here("data", "whr2019_data.xls"), 
+                            sheet = 2, range = "A1:K157") 
+
+#clean data file for 2018
+data_2018 <- data_2018_raw %>% 
+  select("Country", 
+         "Happiness score") %>% #select the required columns
+  rename('2018'='Happiness score') #rename column for ease of merging data frames
+```
+
+**2019 Data**
+
+```{r, warning=FALSE, message=FALSE}
+#import data file for 2019
+data_2019_raw <- read_excel(here("data", "whr2020_data.xls")) 
+
+#clean data file for 2019
+data_2019 <- data_2019_raw %>% 
+  select("Country name", 
+         "Regional indicator",
+         "Ladder score") %>% #select the required columns
+  rename('Country'='Country name',
+         '2019'='Ladder score') #rename columns for ease of merging data frames
+```
+
+**2020 Data**
+
+```{r, warning=FALSE, message=FALSE}
+#import data file for 2020
+data_2020_raw <- read_excel(here("data", "whr2021_data.xls")) 
+
+#clean data file for 2020
+data_2020 <- data_2020_raw %>% 
+  select("Country name", 
+         "Ladder score") %>% #select the required columns
+  rename('Country'='Country name',
+         '2020'='Ladder score') #rename columns for ease of merging data frames
+```
+
+**2021 Data**
+
+```{r, warning=FALSE, message=FALSE}
+#import data file for 2021
+data_2021_raw <- read_excel(here("data", "whr2022_data.xls"), 
+                            range = "A1:L147") 
+
+#clean data file for 2021
+data_2021 <- data_2021_raw %>% 
+  select("Country", 
+         "Happiness score") %>% #select the required columns
+  rename('2021'='Happiness score') #rename columns for ease of merging data frames
+
+#remove '*' from countries 
+#('*' indicated no information available for 2020, 2021) 
+#('*' their averages are based on the 2019)
+data_2021$Country <- gsub("\\*","",as.character(data_2021$Country)) 
+```
+
+**2022 Data**
+
+```{r, warning=FALSE, message=FALSE}
+#import data file for 2022
+data_2022_raw <- read_excel(here("data" , "whr2023_data.xls"))
+
+#clean data file for 2022
+data_2022 <- data_2022_raw %>% 
+  select("Country name", 
+         "Ladder score") %>% #select the required columns
+  rename('Country'='Country name',
+         '2022'='Ladder score')
+```
+
+**Turkey**
+
+```{r, warning=FALSE, message=FALSE}
+#changing Turkey to Turkiye to maintain uniformity across all dataframes
+# make a list of the names of the dataframes
+df_names <- c("data_2017", "data_2018", "data_2019", 
+              "data_2020", "data_2021", "data_2022")
+
+# Loop through each dataframe
+for (i in 1:length(df_names)) {
+  
+  # Get the current dataframe
+  df <- get(df_names[i])
+  
+  # Replace 'Turkey' with 'Turkiye' in the 'Country' column
+  df$Country[df$Country == "Turkey"] <- "Turkiye"
+  
+  # Assign the updated dataframe back to the original variable
+  assign(df_names[i], df)
+}
+```
+
+**Merging Dataframes**
+
+```{r, warning=FALSE, message=FALSE}
+#merge data frames for all years
+df_list <- list(data_2017, data_2018, data_2019, data_2020, data_2021, data_2022)
+df <- df_list %>% reduce(full_join, by='Country')
+
+#arranging the columns in the correct order
+df <- df %>% select(`Country`, `Regional indicator`, `2017`,
+                    `2018`, `2019`, `2020`, `2021`, `2022`)
+
+#view first 6 rows of the dataframe
+head(df)
+```
+
+## Visualisation 1: How did the World Happiness Scores for every country fare from 2017 to 2022? 
+
+The first question analysed the World Happiness score data for every country for trends across the six years. A choropleth map was created to visualise this.
+
+### Cleaning data for Visualisation 1
+
+```{r, warning=FALSE, message=FALSE}
+#convert wide data frame to long data frame
+df_map <- df %>% select("Country", "2017", "2018", 
+                        "2019", "2020", "2021", "2022") %>% 
+  melt(id='Country')
+
+#rename columns for easier understanding
+df_map <- rename(df_map, 'Year' = 'variable', 'Happiness' = 'value') 
+
+#organize data frame by country instead of year
+df_map <- df_map[order(df_map$Country), ] 
+
+#round off happiness score column at 3 decimal places
+df_map$Happiness <- round(df_map$Happiness,3) 
+
+#drop rows with NA in happiness score column
+df_map <- drop_na(df_map, Happiness) 
+
+#view top 6 rows of dataset
+head(df_map) 
+```
+
+### Creating Visualisation 1
+
+```{r}
+#creating a directory for saving all figures
+if(!dir.exists(paste0(getwd(),"/figures")))dir.create(paste0(getwd(),"/figures"))
+figures_dir <- paste0(getwd(),"/figures")
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align = 'center', eval=FALSE}
+#fonts
+f <- list(family = "Times New Roman")
+f1 <- list(family = "Times New Roman", size=20)
+
+#create map visualization of world happiness data using plotly library
+#locationmode specifies locations to be used (countries in the world here)
+#frame specifies the column to be used to create the slider
+#add trace creates a layer on the map 
+#add trace then plots the data from the data frame columns on the map
+covidhappiness_map <- plot_geo(df_map, 
+                               locationmode = 'country names', 
+                               frame = ~Year) %>% 
+  add_trace(
+    locations = ~Country, 
+    z = ~Happiness, 
+    color = ~Happiness, 
+    colors = "PuRd",
+    text = ~paste("Country:", Country, 
+                          "<br>Happiness score:", Happiness),
+    hoverinfo = "text"
+    ) %>% 
+  layout(font = f, 
+         title = list(text='Happiness across the world from 2017 to 2022
+                      <br><sup>
+                      The impact of COVID-19 pandemic on world happiness
+                      <br><sup>
+                      Source: World Happiness Reports 2018 - 2023', 
+                      x=0.5, y=0.9, xanchor='center', yanchor='top', font=f1),
+         margin = list(l = 50, r = 50, b = 100, t = 100, pad = 4)
+         ) %>%   
+  colorbar(title = "Happiness Score", limits = c(1,8))  
+
+#save the visualisation
+htmlwidgets::saveWidget(covidhappiness_map, file.path(figures_dir, "map.html"))
+
+#print the visualisation
+covidhappiness_map
+```
+
+```{r, warning=FALSE, message=FALSE}
+#This visual is created through plotly to be interactive. 
+#Click on each year in the slider below the visual, to view the data for that year. 
+#Click on ‘Play’ to cycle through the years. 
+#Hover the mouse on each country to view its happiness score. 
+```
+
+The code chunk creating the visualisation has been deactivated in this document as the visualisation is animated and interactive. The visualisation can be viewed on the webpage created for this project.
+
+Below is a screenshot of the visualisation for reference with the year set to 2017.
+
+![Static map of 2017 from the visualisation on 'Happiness across the world from 2017 to 2022: The impact of COVID-19 pandemic on world happiness'](C:/Users/tanvi/OneDrive/Documents/Semester 2/Data analysis and visualization/hopefully final/map_static_2017.png)
+
+### Analysing Visualisation 1
+
+The happiness scores for most counties seemed to have remained in a similar range across the years. No significant changes became apparent. However, data was unavailable for multiple countries for the pandemic years (2020-2022). 
+
+## Visualisation 2: Changes in World Happiness Scores from 2017-2019 to 2020-2022
+
+In order to better analyse the changes in World Happiness Scores from 2017-2019 to 2020-2022, the difference of means was considered. A diverging bar plot was constructed with the data for each country to visualise the direction and magnitude of difference.
+
+### Cleaning data for Visualisation 2
+
+```{r, warning=FALSE, message=FALSE}
+#create a copy of the base dataframe for this visualisation
+avg_df <- df 
+
+#rename columns for ease and change the numeric names to characters e.g.'2017' to 'year2017'
+col_names <- c("Country", "Region", "year2017","year2018",
+               "year2019","year2020","year2021","year2022")
+colnames(avg_df) <- col_names
+
+#adding columns for calculating the difference of means
+avg_df <- avg_df %>% 
+  #create column for average happiness score for 2017-2019 (pre-pandemic)
+  mutate(avg_2017_2019 = (year2017 + year2018 + year2019)/3) %>% 
+  #create column for average happiness score for 2020-2022 (during pandemic)
+  mutate(avg_2020_2022 = (year2020 + year2021 + year2022)/3) %>% 
+  #create column for difference of means of 2017-2019 and 2020-2022 
+  mutate(mean_diff = avg_2020_2022-avg_2017_2019) %>% 
+  #create a column in which positive mean diff is TRUE and negative mean diff is FALSE
+  mutate(diff_pos = mean_diff >= 0) 
+
+#round off mean_diff column at 3 decimal places
+avg_df$mean_diff <- round(avg_df$mean_diff,3) 
+
+#remove rows with NA in mean_diff column
+tidy_avg_df <- drop_na(avg_df, mean_diff) 
+
+#create column having country name followed by mean difference for labelling y axis
+tidy_avg_df <- mutate(tidy_avg_df, 
+                      Country_Details = 
+                        paste(tidy_avg_df$Country,"(",tidy_avg_df$mean_diff,")")) 
+
+```
+
+### Creating Visualisation 2
+
+```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=20, fig.align = 'center'}
+change <- tidy_avg_df %>% 
+  ggplot(aes(x=mean_diff, 
+             y=reorder(Country_Details, mean_diff), fill = diff_pos)) + 
+  geom_col(colour = "black") +
+  scale_fill_manual (values = c("red","green"), name = "", 
+                     labels=c("Mean Decrease","Mean Increase")) +
+  labs (title = "Comparing Happiness in 2017-2019 and 2020-2022",
+        subtitle = "Changes from pre-COVID years to during COVID pandemic years",
+        caption = "Source: World Happiness Reports 2018 - 2023",
+        x = "Changes from 2017-2019 to 2020-2022",
+        y = NULL) +
+  xlim (-2,2) +
+  theme(text=element_text(family = "serif"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        plot.title = element_text(size = 16, face = "bold"),
+        axis.ticks.y = element_blank(),
+        legend.position = "top",
+        legend.justification = "right",
+        legend.key.width = unit(0.5, unit = "cm"),
+        legend.key.height = unit(0.5, unit = "cm")) 
+
+#saving the visualisation
+ggsave(filename = "country_wise_change.png", 
+       plot = change, 
+       path = figures_dir, 
+       width = 10, height = 20, units = "in")
+
+#print the visualisation
+change
+```
+
+### Analysing Visualisation 2
+
+Almost equal number of countries saw an increase and decrease in happiness scores across the world. Overall, barring a few exceptions (e.g., Lebanon – 1.745), the mean difference between the two sets of years was quite small for most countries. 
+
+
+## Visualisation 3: Region-wise Changes in World Happiness Scores from 2017-2019 to 2020-2022
+
+Taking the analysis further, the changes in World Happiness scores from 2017-2019 to 2020-2022 were considered at the level of world regions. A boxplot was constructed to visualise the mean difference of countries as per each world region.
+
+### Creating Visualisation 3
+
+```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=7, fig.align = 'center'}
+region_wise_1 <- ggplot(tidy_avg_df, aes(x=Region, y=mean_diff, fill=Region))
+region_wise_plot_1 <- 
+  region_wise_1 + 
+  geom_boxplot() + 
+  labs(title = "Region-wise changes in happiness",
+       subtitle = "Plotting the mean difference between 2017-2019 and 2020-2022",
+       caption = "Source: World Happiness Report 2018 to 2023") +
+  xlab("World Region")+
+  ylab("Mean Difference")+
+  ylim (-2,1) +
+  theme(legend.position="none", 
+        axis.text.x=element_text(angle = 45,hjust=1, size=8),
+        text=element_text(family = "serif"),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  scale_fill_brewer(palette = "Set3")
+
+#save the visualisation
+ggsave(filename = "region_wise_change.png", 
+       plot = region_wise_plot_1, 
+       path = figures_dir, 
+       width = 8, height = 7, units = "in")
+
+#print the visualisation
+region_wise_plot_1
+```
+
+### Analysing Visualisation 3
+
+The mean difference for South Asia showed a negative trend more than other regions, suggesting that more countries in this region experienced a decrease in happiness compared to other regions.  Central and Eastern Europe as well as the Commonwealth of Independent States showed a stronger positive trend suggesting an increase in happiness. However, the median scores for all regions were very close to zero suggesting that even at a world region level there was no significant increase or decrease in world happiness.  
+
+## Project Conclusions
+
+The project analysed the World Happiness scores from 2017 to 2022, to consider how wellbeing was affected across the world in light of the COVID-19 pandemic. The data was analysed and visualised to look for trends and changes at a global, world region and country level. Overall, the data suggested that that psychological wellbeing levels held their ground despite the anxiety and stress created by the global crisis.
+
+## Future Directions
+
+The findings of this project were quite counterintuitive. So, further I would analyse the explanatory factors within the World Happiness Reports (e.g., social support, perceptions of corruption) to see what factors played a role in maintaining the world’s resilience. In terms of visualisation, I would create a more interactive dashboard that allows the viewer to choose variables (countries, regions, years, explanatory factors) that would then be visualised. 
+
+## References
+
+2017 data: <https://worldhappiness.report/ed/2018/#appendices-and-data>
+
+2018 data: <https://worldhappiness.report/ed/2019/#appendices-and-data>
+
+2019 data: <https://worldhappiness.report/ed/2020/#appendices-and-data>
+
+2020 data: <https://worldhappiness.report/ed/2021/#appendices-and-data>
+
+2021 data: <https://worldhappiness.report/ed/2022/#appendices-and-data>
+
+2022 data: <https://worldhappiness.report/ed/2023/#appendices-and-data>
+

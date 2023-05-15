@@ -388,15 +388,27 @@ The findings of this project were quite counterintuitive. So, further I would an
 
 ## References
 
-2017 data: <https://worldhappiness.report/ed/2018/#appendices-and-data>
+2017 data is from
+Helliwell, J., Layard, R., & Sachs, J. (2018). World Happiness Report 2018, New York: Sustainable Development Solutions Network.
+<https://worldhappiness.report/ed/2018/#appendices-and-data>
 
-2018 data: <https://worldhappiness.report/ed/2019/#appendices-and-data>
+2018 data is from
+Helliwell, J., Layard, R., & Sachs, J. (2019). World Happiness Report 2019, New York: Sustainable Development Solutions Network.
+<https://worldhappiness.report/ed/2019/#appendices-and-data>
 
-2019 data: <https://worldhappiness.report/ed/2020/#appendices-and-data>
+2019 data is from
+Helliwell, John F., Richard Layard, Jeffrey Sachs, and Jan-Emmanuel De Neve, eds. 2020. World Happiness Report 2020. New York: Sustainable Development Solutions Network
+<https://worldhappiness.report/ed/2020/#appendices-and-data>
 
-2020 data: <https://worldhappiness.report/ed/2021/#appendices-and-data>
+2020 data is from
+Helliwell, John F., Richard Layard, Jeffrey Sachs, and Jan-Emmanuel De Neve, eds. 2021. World Happiness Report 2021. New York: Sustainable Development Solutions Network.
+<https://worldhappiness.report/ed/2021/#appendices-and-data>
 
-2021 data: <https://worldhappiness.report/ed/2022/#appendices-and-data>
+2021 data is from
+Helliwell, J. F., Layard, R., Sachs, J. D., De Neve, J.-E., Aknin, L. B., & Wang, S. (Eds.). (2022). World Happiness Report 2022. New York: Sustainable Development Solutions Network.
+<https://worldhappiness.report/ed/2022/#appendices-and-data>
 
-2022 data: <https://worldhappiness.report/ed/2023/#appendices-and-data>
+2022 data is from
+Helliwell, J. F., Layard, R., Sachs, J. D., Aknin, L. B., De Neve, J.-E., & Wang, S. (Eds.). (2023). World Happiness Report 2023 (11th ed.). Sustainable Development Solutions Network.
+<https://worldhappiness.report/ed/2023/#appendices-and-data>
 
